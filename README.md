@@ -98,19 +98,33 @@ Where:
 
 ## Program
 
-```python
-
-
-# -------------------------------------------------
+```
 # Policy Evaluation Function
-# -------------------------------------------------
+def policy_evaluation(pi, P, gamma, theta=1e-8):
+    V = np.zeros(len(P))
+    iteration = 0
+
+    while True:
+        prev_V = V.copy()
+        iteration += 1
+
+        for s in range(len(P)):
+            V[s] = 0.0
+
+            for a, action_prob in enumerate(pi[s]):
+                for prob, next_state, reward, done in P[s][a]:
+                    V[s] += action_prob * prob * (
+                        reward
+                        + gamma * prev_V[next_state] * (not done)
+                    )
+
+        # Check convergence
+        if np.max(np.abs(V - prev_V)) < theta:
+            break
+
+    return V, iteration
 
 
-# -------------------------------------------------
-# Display Output
-# -------------------------------------------------
-
-# Change the parameters and observe the results
 
 ```
 
@@ -118,16 +132,40 @@ Where:
 
 ## Output
 
-```text
+```
+# Student details
+print("Name: S R NIVEDHITHA")
+print("Register Number:212225240102")
 
-Number of Iterations: 
+# Run for both gamma values
+for gamma in [0.9, 0.99]:
 
-State-Value Function as 4x4 Grid:
+    V, iterations = policy_evaluation(
+        policy, env.P, gamma, theta
+    )
+
+    print("\n" + "=" * 40)
+    print("GAMMA =", gamma)
+    print("=" * 40)
+
+    print("Number of iterations:", iterations)
+
+    print("\nState-Value Function:")
+    print(V)
+
+    print("\nState-Value Function as 4x4 Grid:")
+    print(np.round(V.reshape(4, 4), 4))
+
+
+# Close environment
+env.close()
+
 
 
 
 ```
----
+<img width="288" height="356" alt="image" src="https://github.com/user-attachments/assets/0c81d867-c945-439e-93d6-81448a3c6955" />
+
 
 ## Result
 
@@ -137,11 +175,17 @@ Iterative policy evaluation was implemented successfully using the Gymnasium Fro
 
 ## Inference
 
-```text
+1. The random policy selects all four actions (Left, Down, Right, and Up) with equal probability of 0.25 in every state.
+
+2. When \(\gamma = 0.9\), future rewards are given less importance, so the state values are generally lower than with \(\gamma = 0.99\).
+
+3. When \(\gamma = 0.99\), future rewards are given more importance, resulting in higher state values for states that have a greater chance of reaching the goal.
+
+4. The policy evaluation algorithm updates the state values repeatedly until the difference between consecutive iterations becomes smaller than the convergence threshold \(\theta = 10^{-8}\). The goal and hole states are terminal states, so no future rewards are added after reaching them.
 
 
 
-```
+
 
 
 
