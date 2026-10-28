@@ -99,6 +99,30 @@ Where:
 ## Program
 
 ```
+
+import gymnasium as gym
+import numpy as np
+
+# Create FrozenLake environment
+env = gym.make(
+    "FrozenLake-v1",
+    map_name="4x4",
+    is_slippery=True
+)
+
+env = env.unwrapped
+
+# Number of states and actions
+n_states = env.observation_space.n
+n_actions = env.action_space.n
+
+# Convergence threshold
+theta = 1e-8
+
+# Random policy: equal probability for every action
+policy = np.ones((n_states, n_actions)) / n_actions
+
+
 # Policy Evaluation Function
 def policy_evaluation(pi, P, gamma, theta=1e-8):
     V = np.zeros(len(P))
@@ -123,6 +147,35 @@ def policy_evaluation(pi, P, gamma, theta=1e-8):
             break
 
     return V, iteration
+
+
+# Student details
+print("Name: Rakisha R.")
+print("Register Number: Enter your register number")
+
+
+# Run for both gamma values
+for gamma in [0.9, 0.99]:
+
+    V, iterations = policy_evaluation(
+        policy, env.P, gamma, theta
+    )
+
+    print("\n" + "=" * 40)
+    print("GAMMA =", gamma)
+    print("=" * 40)
+
+    print("Number of iterations:", iterations)
+
+    print("\nState-Value Function:")
+    print(V)
+
+    print("\nState-Value Function as 4x4 Grid:")
+    print(np.round(V.reshape(4, 4), 4))
+
+
+# Close environment
+env.close()
 
 
 
